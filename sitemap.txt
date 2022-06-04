@@ -1,3 +1,4 @@
 http://example.com/2022/06/04/hexo/
+http://example.com/2022/06/04/hexo-1/
 http://example.com/2022/06/04/hello-world/
 http://example.com/
