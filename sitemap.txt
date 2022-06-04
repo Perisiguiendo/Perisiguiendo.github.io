@@ -1,2 +1,4 @@
+http://example.com/ES6/index.html
+http://example.com/2022/06/04/hexo/
 http://example.com/2022/06/04/hello-world/
 http://example.com/
