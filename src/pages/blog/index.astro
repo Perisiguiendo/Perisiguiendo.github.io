@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="博客">
+  <div class="container py-12">
+    <h1
+      class="mb-8 text-3xl font-bold"
+      style="color: var(--color-text);"
+    >
+      博客
+    </h1>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post, i) => (
+        <div class:list={['animate-fade-in', `stagger-${Math.min(i + 1, 6)}`]}>
+          <PostCard
+            title={post.data.title}
+            date={post.data.date.toISOString()}
+            href={`/blog/${post.id}`}
+            description={post.data.description}
+            tags={post.data.tags}
+            cover={post.data.cover}
+          />
+        </div>
+      ))}
+    </div>
+    {posts.length === 0 && (
+      <p style="color: var(--color-text-muted);">暂无文章</p>
+    )}
+  </div>
+</BaseLayout>

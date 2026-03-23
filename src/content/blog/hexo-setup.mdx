@@ -1,0 +1,140 @@
+---
+title: "Hexo + GitHub Pages 搭建个人博客"
+description: "使用 Hexo 和 GitHub Pages 从零搭建并部署个人静态博客的完整教程"
+date: 2022-06-04
+tags: ["Hexo", "GitHub Pages", "教程"]
+---
+
+## GitHub Pages 是什么？
+
+GitHub Pages 是由 GitHub 官方提供的一种免费的静态站点托管服务，让我们可以在 GitHub 仓库里托管和发布自己的静态网站页面。
+
+## Hexo 是什么？
+
+Hexo 是一个快速、简洁且高效的静态博客框架，它基于 Node.js 运行，可以将我们撰写的 Markdown 文档解析渲染成静态的 HTML 网页。
+
+## Hexo + GitHub 文章发布原理
+
+在本地撰写 Markdown 格式文章后，通过 Hexo 解析文档，渲染生成具有主题样式的 HTML 静态网页，再推送到 GitHub 上完成博文的发布。
+
+## 优点和不足
+
+**优点：** 完全免费；静态站点，轻量快速；可按需求自由定制改造；托管在 GitHub，安全省心；迁移方便……
+
+**不足：** 发文不便，依赖于本地环境；更适合个人博客使用；GitHub 在国内访问速度有点不快。
+
+## 前置准备
+
+### 注意事项
+
+- 输入代码时，核对准确，最好切换成英文输入法；
+- 将文中的 "用户名" 和 "邮箱" 替换为自己的 GitHub 账户名和绑定的邮箱；
+- 统一使用 Git Bash 进行操作（支持 Win、Mac）；
+- 小白请严格按步骤进行，不要跳！
+
+### 环境搭建
+
+Hexo 基于 Node.js，搭建过程中还需要使用 npm（Node.js 已带）和 git，因此先搭建本地操作环境，安装 Node.js 和 Git。
+
+- Node.js：https://nodejs.org/zh-cn
+- Git：https://git-scm.com/downloads
+
+下载 Node.js 和 Git 程序并安装，一路点 "下一步" 按默认配置完成安装。
+
+安装完成后，Win+R 输入 cmd 并打开，依次输入 `node -v`、`npm -v` 和 `git --version` 并回车，如出现程序版本号即可。
+
+### 连接 GitHub
+
+使用邮箱注册 GitHub 账户，选择免费账户（Free），并完成邮件验证。
+
+右键 -> Git Bash Here，**设置用户名和邮箱**：
+
+```text
+git config --global user.name "GitHub 用户名"
+git config --global user.email "GitHub 邮箱"
+```
+
+**创建 SSH 密匙：**
+
+输入 `ssh-keygen -t rsa -C "GitHub 邮箱"`，然后一路回车。
+
+**添加密匙：**
+
+进入 `C:\Users\用户名\.ssh` 目录（要勾选显示"隐藏的项目"），用记事本打开公钥 `id_rsa.pub` 文件并复制里面的内容。
+
+登陆 GitHub，进入 Settings 页面，选择左边栏的 SSH and GPG keys，点击 New SSH key。
+
+Title 随便取个名字，粘贴复制的 `id_rsa.pub` 内容到 Key 中，点击 Add SSH key 完成添加。
+
+**验证连接：**
+
+打开 Git Bash，输入 `ssh -T git@github.com` 出现 "Are you sure……"，输入 yes 回车确认。
+
+显示 "Hi xxx! You've successfully……" 即连接成功。
+
+## 步骤
+
+### 1. 创建 GitHub Pages 仓库
+
+GitHub 主页右上角加号 -> New repository：
+
+- Repository name 中输入 `用户名.github.io`
+- 勾选 "Initialize this repository with a README"
+- Description 选填
+
+填好后点击 Create repository 创建。
+
+创建后默认自动启用 HTTPS，博客地址为：`https://用户名.github.io`
+
+### 2. 本地安装 Hexo 博客程序
+
+新建一个文件夹用来存放 Hexo 的程序文件，如 Hexo-Blog。打开该文件夹，右键 -> Git Bash Here。
+
+使用 npm 一键安装 Hexo 博客程序：
+
+```bash
+npm install -g hexo-cli
+```
+
+安装完成后，初始化 Hexo：
+
+```bash
+hexo init      # 初始化
+npm install    # 安装组件
+```
+
+完成后依次输入以下命令，启动本地服务器进行预览：
+
+```bash
+hexo g   # 生成页面
+hexo s   # 启动预览
+```
+
+访问 `http://localhost:4000`，即可看到 Hexo 默认页面。
+
+### 3. 部署到 GitHub
+
+安装 hexo-deployer-git：
+
+```bash
+npm install hexo-deployer-git --save
+```
+
+修改 `_config.yml` 文件末尾的 deploy 部分：
+
+```yaml
+deploy:
+  type: git
+  repository: git@github.com:用户名/用户名.github.io.git
+  branch: master
+```
+
+然后执行部署命令：
+
+```bash
+hexo clean   # 清除缓存
+hexo g       # 生成页面
+hexo d       # 部署到远端
+```
+
+稍等片刻，在浏览器中访问 `https://用户名.github.io` 就能看到你的博客了！

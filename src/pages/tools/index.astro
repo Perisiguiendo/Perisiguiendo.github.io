@@ -1,0 +1,57 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+
+const tools = [
+  { name: 'JSON 格式化', href: '/tools/json-formatter', icon: '{ }', description: 'JSON 美化、压缩、校验', category: '编解码' },
+  { name: 'JSON Diff', href: '/tools/json-diff', icon: '⇄', description: 'JSON 结构化差异对比', category: '对比' },
+  { name: 'Base64', href: '/tools/base64', icon: '🔐', description: '文本/图片 Base64 编解码', category: '编解码' },
+  { name: 'URL 编解码', href: '/tools/url-codec', icon: '🔗', description: 'URL 编码与解码', category: '编解码' },
+  { name: '时间戳', href: '/tools/timestamp', icon: '🕐', description: 'Unix 时间戳互转', category: '转换' },
+  { name: '正则测试', href: '/tools/regex', icon: '/.*/', description: '正则表达式实时测试', category: '开发' },
+  { name: '颜色转换', href: '/tools/color', icon: '🎨', description: 'HEX/RGB/HSL 互转', category: '转换' },
+  { name: 'Markdown', href: '/tools/markdown', icon: '📝', description: 'Markdown 实时预览', category: '编辑' },
+  { name: '文本 Diff', href: '/tools/diff', icon: '📄', description: '文本差异对比', category: '对比' },
+  { name: '翻译', href: '/tools/translate', icon: '🌐', description: '浏览器端翻译工具', category: '翻译' },
+  { name: 'Pad 检测', href: '/tools/pad-detector', icon: '📐', description: '设备尺寸与折叠屏检测', category: '开发' },
+];
+
+const categories = [...new Set(tools.map(t => t.category))];
+---
+
+<ToolLayout title="工具箱" description="日常开发中常用的在线工具集合">
+  <h1 class="mb-2 text-3xl font-bold" style="color: var(--color-text);">
+    工具箱
+  </h1>
+  <p class="mb-8 text-sm" style="color: var(--color-text-secondary);">
+    日常开发中常用的在线工具集合，所有工具均在浏览器端运行，无需后端。
+  </p>
+
+  {categories.map(cat => (
+    <div class="mb-8">
+      <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider" style="color: var(--color-text-muted);">
+        {cat}
+      </h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {tools.filter(t => t.category === cat).map(tool => (
+          <a
+            href={tool.href}
+            class="card flex items-start gap-4 p-4"
+          >
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg text-lg"
+              style="background: color-mix(in srgb, var(--color-primary) 10%, transparent);">
+              {tool.icon}
+            </span>
+            <div>
+              <h3 class="font-semibold" style="color: var(--color-text);">
+                {tool.name}
+              </h3>
+              <p class="mt-0.5 text-xs" style="color: var(--color-text-secondary);">
+                {tool.description}
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  ))}
+</ToolLayout>

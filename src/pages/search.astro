@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="搜索" description="搜索博客文章与工具">
+  <div class="container py-16">
+    <h1 class="mb-8 text-3xl font-bold" style="color: var(--color-text);">搜索</h1>
+    <div id="search-wrapper">
+      <div class="relative mb-8">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="搜索文章、工具..."
+          class="w-full rounded-lg border px-4 py-3 text-base outline-none transition-colors"
+          style="background: var(--color-surface); border-color: var(--color-border); color: var(--color-text);"
+          autofocus
+        />
+        <kbd class="absolute right-3 top-1/2 hidden -translate-y-1/2 rounded border px-2 py-0.5 text-xs sm:inline-block"
+          style="border-color: var(--color-border); color: var(--color-text-muted);">
+          ESC
+        </kbd>
+      </div>
+      <div id="search-results" class="space-y-4"></div>
+      <p id="search-empty" class="hidden text-center" style="color: var(--color-text-muted);">
+        没有找到相关结果
+      </p>
+      <p id="search-hint" class="text-center text-sm" style="color: var(--color-text-muted);">
+        输入关键词开始搜索（搜索由 Pagefind 提供支持，需要先构建站点）
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  async function initSearch() {
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('search-results');
+    const empty = document.getElementById('search-empty');
+    const hint = document.getElementById('search-hint');
+
+    let pagefind;
+
+    try {
+      pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.init();
+      hint.textContent = '输入关键词开始搜索';
+    } catch {
+      hint.textContent = '搜索索引未就绪 — 请先执行 npm run build';
+      return;
+    }
+
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() { search(input.value); }, 200);
+    });
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        input.value = '';
+        results.innerHTML = '';
+        empty.classList.add('hidden');
+        hint.classList.remove('hidden');
+      }
+    });
+
+    async function search(query) {
+      if (!query.trim()) {
+        results.innerHTML = '';
+        empty.classList.add('hidden');
+        hint.classList.remove('hidden');
+        return;
+      }
+
+      hint.classList.add('hidden');
+      const searchResults = await pagefind.search(query);
+      const data = await Promise.all(searchResults.results.slice(0, 10).map(function(r) { return r.data(); }));
+
+      if (data.length === 0) {
+        results.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      results.innerHTML = data.map(function(item) {
+        return '<a href="' + item.url + '" class="card block p-4 transition-transform hover:scale-[1.01]">' +
+          '<h2 class="mb-1 font-semibold" style="color: var(--color-text);">' + (item.meta && item.meta.title ? item.meta.title : item.url) + '</h2>' +
+          '<p class="text-sm" style="color: var(--color-text-secondary);">' + item.excerpt + '</p>' +
+        '</a>';
+      }).join('');
+    }
+  }
+
+  initSearch();
+</script>

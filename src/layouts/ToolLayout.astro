@@ -1,0 +1,75 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const tools = [
+  { name: 'JSON 格式化', href: '/tools/json-formatter', icon: '{ }', description: 'JSON 美化、压缩、校验' },
+  { name: 'JSON Diff', href: '/tools/json-diff', icon: '⇄', description: 'JSON 结构化差异对比' },
+  { name: 'Base64', href: '/tools/base64', icon: '🔐', description: '文本/图片 Base64 编解码' },
+  { name: 'URL 编解码', href: '/tools/url-codec', icon: '🔗', description: 'URL 编码与解码' },
+  { name: '时间戳', href: '/tools/timestamp', icon: '🕐', description: 'Unix 时间戳互转' },
+  { name: '正则测试', href: '/tools/regex', icon: '/.*/', description: '正则表达式实时测试' },
+  { name: '颜色转换', href: '/tools/color', icon: '🎨', description: 'HEX/RGB/HSL 互转' },
+  { name: 'Markdown', href: '/tools/markdown', icon: '📝', description: 'Markdown 实时预览' },
+  { name: '文本 Diff', href: '/tools/diff', icon: '📄', description: '文本差异对比' },
+  { name: '翻译', href: '/tools/translate', icon: '🌐', description: '浏览器端翻译工具' },
+  { name: 'Pad 检测', href: '/tools/pad-detector', icon: '📐', description: '设备尺寸与折叠屏检测' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container py-8">
+    <div class="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[240px_1fr]">
+      <!-- Sidebar -->
+      <aside class="hidden lg:block">
+        <div
+          class="sticky top-24 rounded-xl border p-4"
+          style="background: var(--color-bg-card); border-color: var(--color-border);"
+        >
+          <h2
+            class="mb-3 text-xs font-semibold uppercase tracking-wider"
+            style="color: var(--color-text-muted);"
+          >
+            工具箱
+          </h2>
+          <ul class="space-y-1">
+            {tools.map(({ name, href, icon }) => {
+              const isActive = currentPath === href || currentPath === href + '/';
+              return (
+                <li>
+                  <a
+                    href={href}
+                    class:list={[
+                      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
+                      isActive ? 'font-semibold' : '',
+                    ]}
+                    style={isActive
+                      ? 'color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent);'
+                      : 'color: var(--color-text-secondary);'
+                    }
+                  >
+                    <span class="w-6 text-center text-xs">{icon}</span>
+                    {name}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <div class="min-w-0">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

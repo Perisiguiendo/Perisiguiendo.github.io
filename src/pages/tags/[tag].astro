@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const tagSet = new Set<string>();
+  for (const post of posts) {
+    if (post.data.draft) continue;
+    for (const tag of post.data.tags) {
+      tagSet.add(tag);
+    }
+  }
+  return [...tagSet].map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft && p.data.tags.includes(tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title={`标签: ${tag}`}>
+  <div class="container py-12">
+    <div class="mb-8 flex items-center gap-3">
+      <a
+        href="/tags"
+        class="text-sm"
+        style="color: var(--color-text-muted);"
+      >
+        ← 所有标签
+      </a>
+    </div>
+    <h1
+      class="mb-8 text-3xl font-bold"
+      style="color: var(--color-text);"
+    >
+      标签: <span style="color: var(--color-primary);">{tag}</span>
+    </h1>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => (
+        <PostCard
+          title={post.data.title}
+          date={post.data.date.toISOString()}
+          href={`/blog/${post.id}`}
+          description={post.data.description}
+          tags={post.data.tags}
+          cover={post.data.cover}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="首页">
+  <!-- Hero -->
+  <section class="container py-20 text-center">
+    <h1
+      class="animate-fade-in text-4xl font-bold tracking-tight md:text-5xl"
+      style="font-family: var(--font-heading); color: var(--color-text);"
+    >
+      cruel<span style="color: var(--color-primary);">.run</span>
+    </h1>
+    <p
+      class="animate-fade-in stagger-1 mx-auto mt-4 max-w-lg text-lg"
+      style="color: var(--color-text-secondary);"
+    >
+      个人博客与工具箱
+    </p>
+    <div class="animate-fade-in stagger-2 mt-8 flex justify-center gap-4">
+      <a
+        href="/blog"
+        class="rounded-lg px-6 py-2.5 text-sm font-medium text-white transition-colors"
+        style="background: var(--color-primary);"
+      >
+        阅读博客
+      </a>
+      <a
+        href="/tools"
+        class="rounded-lg border px-6 py-2.5 text-sm font-medium transition-colors"
+        style="border-color: var(--color-border); color: var(--color-text);"
+      >
+        工具箱
+      </a>
+    </div>
+  </section>
+
+  <!-- Latest Posts -->
+  {posts.length > 0 && (
+    <section class="container pb-20">
+      <h2
+        class="mb-8 text-2xl font-bold"
+        style="color: var(--color-text);"
+      >
+        最新文章
+      </h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {posts.slice(0, 6).map((post, i) => (
+          <div class:list={['animate-fade-in', `stagger-${i + 1}`]}>
+            <PostCard
+              title={post.data.title}
+              date={post.data.date.toISOString()}
+              href={`/blog/${post.id}`}
+              description={post.data.description}
+              tags={post.data.tags}
+              cover={post.data.cover}
+            />
+          </div>
+        ))}
+      </div>
+      {posts.length > 6 && (
+        <div class="mt-8 text-center">
+          <a
+            href="/blog"
+            class="text-sm font-medium"
+            style="color: var(--color-primary);"
+          >
+            查看全部文章 →
+          </a>
+        </div>
+      )}
+    </section>
+  )}
+</BaseLayout>

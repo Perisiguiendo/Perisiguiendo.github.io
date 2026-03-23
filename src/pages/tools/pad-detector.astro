@@ -1,0 +1,8 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import PadDetector from '../../components/tools/PadDetector';
+---
+
+<ToolLayout title="Pad 检测" description="检测设备是否为平板尺寸，支持折叠屏展开检测">
+  <PadDetector client:load />
+</ToolLayout>

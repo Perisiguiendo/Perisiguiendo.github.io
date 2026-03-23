@@ -1,0 +1,127 @@
+---
+const themes = [
+  { id: 'minimal', label: '极简现代', icon: '◻' },
+  { id: 'cyberpunk', label: '赛博朋克', icon: '⬡' },
+  { id: 'literary', label: '文艺清新', icon: '❦' },
+] as const;
+---
+
+<div
+  id="theme-switcher"
+  class="fixed bottom-6 right-6 z-50"
+>
+  <!-- Toggle button -->
+  <button
+    id="theme-toggle-btn"
+    class="flex size-12 items-center justify-center rounded-full text-lg shadow-lg transition-all hover:scale-110"
+    style="background: var(--color-primary); color: white; box-shadow: var(--shadow-glow), var(--shadow-lg);"
+    aria-label="主题设置"
+  >
+    🎨
+  </button>
+
+  <!-- Panel -->
+  <div
+    id="theme-panel"
+    class="pointer-events-none absolute bottom-16 right-0 w-64 origin-bottom-right scale-95 rounded-xl border p-4 opacity-0 transition-all"
+    style="background: var(--color-bg-card); border-color: var(--color-border); box-shadow: var(--shadow-lg);"
+  >
+    <!-- Light / Dark toggle -->
+    <div class="mb-3 flex items-center justify-between">
+      <span class="text-sm font-medium" style="color: var(--color-text);">外观模式</span>
+      <button
+        id="mode-toggle"
+        class="flex size-9 items-center justify-center rounded-lg text-lg transition-colors"
+        style="background: var(--color-bg-secondary); color: var(--color-text);"
+        aria-label="切换明暗模式"
+      >
+        <span id="mode-icon">☀️</span>
+      </button>
+    </div>
+
+    <hr style="border-color: var(--color-border);" class="mb-3" />
+
+    <!-- Theme presets -->
+    <div class="text-sm font-medium mb-2" style="color: var(--color-text);">风格主题</div>
+    <div class="grid gap-2">
+      {themes.map(({ id, label, icon }) => (
+        <button
+          class="theme-option flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all"
+          style="color: var(--color-text-secondary); background: var(--color-bg-secondary);"
+          data-theme-value={id}
+        >
+          <span class="text-lg">{icon}</span>
+          <span>{label}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  const panel = document.getElementById('theme-panel')!;
+  const toggleBtn = document.getElementById('theme-toggle-btn')!;
+  const modeToggle = document.getElementById('mode-toggle')!;
+  const modeIcon = document.getElementById('mode-icon')!;
+  const themeOptions = document.querySelectorAll('.theme-option');
+  let isOpen = false;
+
+  function updateUI() {
+    const mode = document.documentElement.getAttribute('data-mode');
+    const theme = document.documentElement.getAttribute('data-theme');
+    modeIcon.textContent = mode === 'dark' ? '🌙' : '☀️';
+
+    themeOptions.forEach((btn) => {
+      const val = (btn as HTMLElement).dataset.themeValue;
+      if (val === theme) {
+        (btn as HTMLElement).style.outline = `2px solid var(--color-primary)`;
+        (btn as HTMLElement).style.outlineOffset = '-2px';
+        (btn as HTMLElement).style.background = 'color-mix(in srgb, var(--color-primary) 10%, transparent)';
+      } else {
+        (btn as HTMLElement).style.outline = 'none';
+        (btn as HTMLElement).style.background = 'var(--color-bg-secondary)';
+      }
+    });
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    isOpen = !isOpen;
+    if (isOpen) {
+      panel.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
+      panel.classList.add('pointer-events-auto', 'opacity-100', 'scale-100');
+    } else {
+      panel.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+      panel.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
+    }
+    updateUI();
+  });
+
+  modeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-mode');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-mode', next);
+    localStorage.setItem('mode', next);
+    updateUI();
+  });
+
+  themeOptions.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const val = (btn as HTMLElement).dataset.themeValue!;
+      document.documentElement.setAttribute('data-theme', val);
+      localStorage.setItem('theme', val);
+      updateUI();
+    });
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    const switcher = document.getElementById('theme-switcher');
+    if (isOpen && switcher && !switcher.contains(e.target as Node)) {
+      isOpen = false;
+      panel.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+      panel.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
+    }
+  });
+
+  updateUI();
+</script>

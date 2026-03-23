@@ -1,0 +1,68 @@
+---
+interface Props {
+  title: string;
+  date: string;
+  href: string;
+  description?: string;
+  tags?: string[];
+  cover?: string;
+}
+
+const { title, date, href, description, tags, cover } = Astro.props;
+const dateObj = new Date(date);
+const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="card group overflow-hidden">
+  <a href={href} class="block p-6">
+    {cover && (
+      <div class="mb-4 overflow-hidden rounded-lg" style="aspect-ratio: 16/9;">
+        <img
+          src={cover}
+          alt={title}
+          class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+    )}
+    <div class="flex flex-col gap-2">
+      <time
+        class="text-xs font-medium"
+        style="color: var(--color-text-muted);"
+        datetime={dateObj.toISOString()}
+      >
+        {formattedDate}
+      </time>
+      <h2
+        class="text-lg font-semibold transition-colors"
+        style="color: var(--color-text);"
+      >
+        {title}
+      </h2>
+      {description && (
+        <p
+          class="line-clamp-2 text-sm"
+          style="color: var(--color-text-secondary);"
+        >
+          {description}
+        </p>
+      )}
+      {tags && tags.length > 0 && (
+        <div class="mt-1 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span
+              class="rounded-full px-2.5 py-0.5 text-xs font-medium"
+              style="background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary);"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  </a>
+</article>

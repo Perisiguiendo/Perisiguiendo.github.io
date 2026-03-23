@@ -1,0 +1,108 @@
+---
+const navItems = [
+  { label: '首页', href: '/' },
+  { label: '博客', href: '/blog' },
+  { label: '标签', href: '/tags' },
+  { label: '工具箱', href: '/tools' },
+  { label: '搜索', href: '/search' },
+  { label: '关于', href: '/about' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-40 border-b backdrop-blur-lg transition-colors"
+  style="
+    background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+    border-color: var(--color-border);
+    height: var(--header-height);
+  "
+>
+  <nav class="container flex h-full items-center justify-between">
+    <!-- Logo -->
+    <a
+      href="/"
+      class="text-xl font-bold tracking-tight"
+      style="color: var(--color-text); font-family: var(--font-heading);"
+    >
+      cruel<span style="color: var(--color-primary);">.run</span>
+    </a>
+
+    <!-- Desktop Nav -->
+    <ul class="hidden items-center gap-1 md:flex">
+      {navItems.map(({ label, href }) => {
+        const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
+        return (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                  ? 'font-semibold'
+                  : 'hover:opacity-80',
+              ]}
+              style={isActive
+                ? `color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent);`
+                : `color: var(--color-text-secondary);`
+              }
+            >
+              {label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-btn"
+      class="flex size-10 items-center justify-center rounded-lg md:hidden"
+      style="color: var(--color-text);"
+      aria-label="菜单"
+    >
+      <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t md:hidden"
+    style="background: var(--color-bg); border-color: var(--color-border);"
+  >
+    <ul class="container flex flex-col gap-1 py-3">
+      {navItems.map(({ label, href }) => {
+        const isActive = currentPath === href || (href !== '/' && currentPath.startsWith(href));
+        return (
+          <li>
+            <a
+              href={href}
+              class:list={[
+                'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive ? 'font-semibold' : '',
+              ]}
+              style={isActive
+                ? `color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent);`
+                : `color: var(--color-text-secondary);`
+              }
+            >
+              {label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>
